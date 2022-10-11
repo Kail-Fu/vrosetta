@@ -2,8 +2,7 @@
 
 ## To run the demo:
 
-* $ open http://localhost:5350/index.html
-* $ python3 -m http.server 5350
+* $ ./run.sh
 * Click "Choose File". You can select from "dataset/top5.json", "dataset/top4.json", and "dataset/top3.json"
 * Click "Import"
 
