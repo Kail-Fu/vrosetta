@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- D3/jquery/bootstrap -->
+    <script src="https://d3js.org/d3.v5.min.js"
+            integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+    <!-- Common Functionalities Shared Among Pages -->
+    <script src="js/common.js"></script>
+
+    <!-- JavaScript for UntangleJS -->
+    <script src="untangleJS/lib/DisjointSet.js"></script>
+    <script src="untangleJS/lib/MaximalSpanningTree.js"></script>
+    <script src="untangleJS/lib/JaccardWeights.js"></script>
+    <script src="untangleJS/lib/NodeDegree.js"></script>
+    <script src="untangleJS/lib/PriorityQueue.js"></script>
+    <script src="untangleJS/SpanningTreeLayout.js"></script>
+    <script src="untangleJS/SpanningTreeCycles.js"></script>
+    <script src="untangleJS/LoopForce.js"></script>
+    <script src="untangleJS/PH0D.js"></script>
+    <script src="untangleJS/PH1D.js"></script>
+    <script src="untangleJS/GraphDraw.js"></script>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="57x57" href="images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="images/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">    
+
+    <title>Untangling Force-Directed Layouts with Persistent Homology</title>
+
+</head>
+<body>
+
+
+
+<div class="page" style="padding: 15px; background-color: #ecead3; background-size: contain; background-repeat: no-repeat; background-position: right center; background-image: url(images/background.png);">
+    <h2 style="margin: 0; font-weight: bold;">Untangling Force-Directed Layouts with Persistent Homology</h2>
+</div>
+
+
+<div style="width: 90%; padding: 40px; padding-bottom:0; text-align: justify;">
+    <h4>Abstract</h4>
+    Force-directed layouts belong to a popular class of methods used to position nodes in a node-link diagram. However, they typically lack direct consideration of global structures, which can result in visual clutter and the overlap of unrelated structures. In this paper, we use the principles of persistent homology to untangle force-directed layouts thus mitigating these issues. First, we devise a new method to use 0-dimensional persistent homology to efficiently generate an initial graph layout. The approach results in faster convergence and better quality graph layouts. Second, we provide a new definition and an efficient algorithm for 1-dimensional persistent homology features (i.e., tunnels/cycles) on graphs. We then provide users the ability to interact with these 1-dimensional features by highlighting them and adding cycle-emphasizing forces to the layout. Finally, we evaluate our approach with 32 synthetic and real-world graphs by computing various metrics, e.g., co-ranking, edge crossing, crossing angle, and angular displacements, to demonstrate the efficacy of our proposed method.
+</div>
+
+<div style="padding: 40px;" id="load_files">
+    <input type="file" id="selectFiles" value="Import" /><button id="import">Import</button>
+</div>
+    
+
+<div class="page" id="show_results" style="padding: 40px; display: none">
+
+
+
+        <div style="display: flex;">
+            <div style="width: fit-content">
+                <div style="width: fit-content">
+                    <input type="range" min="0" max="100" value="0" width="200" class="slider" id="myRange" oninput="update_ph(this);">
+                </div>
+                <div style="width: fit-content">
+                    <svg id="barcode" width=150 height=600></svg>
+                </div>
+                <div style="width: fit-content; margin: auto">
+                    H<sub>0</sub> Features
+                </div>
+            </div>
+            <div style="width: fit-content">
+                <div style="width: fit-content; padding-top: 24px">
+                    <svg id="barcode1d" width=150 height=600></svg>
+                </div>
+                <div style="width: fit-content; margin: auto">
+                    H<sub>1</sub> Features
+                </div>
+            </div>
+            <div>
+                <svg id="graph" width=800 height=625></svg>
+            </div>
+            <div style="margin: 20pt; text-align: center">
+
+                <p>Initial Layout</p>
+                <div style="margin: 5pt"><input type="button" id="btn-random" class="btn btn-primary" value="Random Layout (conventional)" onclick="reset_graph('random')"/></div>
+                <div style="margin: 5pt"><input type="button" id="btn-radial_layout"  class="btn btn-outline-primary" value="Radial Layout (our approach)" onclick="reset_graph('radial_layout')"/></div>
+                <div style="margin: 5pt"><input type="button" id="btn-layered_layout" class="btn btn-outline-primary" value="Layered Layout (our approach)" onclick="reset_graph('layered_layout')"/></div>
+                <hr>
+                <p>Color Nodes By...</p>
+                <div class="form-check" style="margin: auto; width: 120px">
+                    <input class="form-check-input" type="radio" name="color_by" id="color_by_group" onclick="update_colors()">
+                    <label class="form-check-label" for="color_by_group">Group</label>
+                </div>
+                <div class="form-check" style="margin: auto; width: 120px">
+                    <input class="form-check-input" type="radio" name="color_by" id="color_by_degree_ranked" onclick="update_colors()" checked>
+                    <label class="form-check-label" for="color_by_degree_ranked">Degree</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div style="width: 90%; padding: 40px; padding-bottom:0; text-align: justify;">
+        <p style="font-size: 18px;">Citation(s): 
+            <ul>
+                <li>Bhavana Doppalapudi, Bei Wang, and Paul Rosen. <i>Untangling Force-Directed Layouts Using Persistent Homology</i>, under review at IEEE VIS, 2022</li>
+                <li>Ashley Suh, Mustafa Hajij, Bei Wang, Carlos Scheidegger, and Paul Rosen. <i>Persistent Homology Guided Force-Directed Graph Layouts</i>, IEEE Transactions on Visualization and Computer Graphics (Proceedings of InfoVIS), 2019</li>
+            </ul>
+        </p>
+        <p style="margin-top: 40px; font-size: 18px;">This work was partially supported by the National Science Foundation (IIS-1513616, IIS-1845204, and DBI-1661375), Department of Energy (DOE) DE-SC0021015, CRA-W Collaborative Research Experiences for Undergraduates (CREU) program, DARPA CHESS FA8750-19-C-0002, and
+            an NVIDIA Academic Hardware Grant.</p>
+    </div>
+    
+</body>
+
+
+<script>
+
+let graph = null
+let ph0d = null
+let ph1d = null
+let graphDraw = null
+let stlayout = null
+
+
+function change_dataset(_graph){
+
+    // let cur_dataset = dataset[ document.getElementById('dataset').value ]
+    // console.log( cur_dataset )
+
+    let start_time = performance.now()
+    // d3.json(cur_dataset)
+    //     .then(_graph => {
+            graph = _graph;
+
+            // console.log(graph)
+
+            let end_time = performance.now()
+            console.log( "Data Download/Parse: " + (end_time - start_time) + " ms")
+
+            console.log( graph.nodes.length + " nodes; " + graph.links.length + " links" )
+
+            document.getElementById('myRange').value = 0
+            d3.select("#barcode").selectAll("*").remove();
+            d3.select("#barcode1d").selectAll("*").remove();
+
+            // For graphs without weights
+            start_time = performance.now()
+            let weightRange = d3.extent( graph.links, l=> ('value' in l) ? l.value : 1 )
+            if( weightRange[1] - weightRange[0] === 0)
+                calculate_jaccard_weights(graph)
+            calculate_node_degree(graph)
+            end_time = performance.now()
+            console.log( "Weight Calculation (Jaccard): " + (end_time - start_time) + " ms")
+
+            start_time = performance.now()
+            stlayout = SpanningTreeLayout(graph)
+            end_time = performance.now()
+            console.log( "Spanning Tree Calculation: " + (end_time - start_time) + " ms")
+
+            start_time = performance.now()
+            ph0d = PersistentHomology0D("#barcode", graph, stlayout.spanning_tree())
+            end_time = performance.now()
+            console.log( "PH0D Calculation: " + (end_time - start_time) + " ms")
+
+            start_time = performance.now()
+            ph1d = PersistentHomology1D("#barcode1d", graph, stlayout.spanning_tree())
+            end_time = performance.now()
+            console.log( "PH1D Calculation: " + (end_time - start_time) + " ms")
+
+            reset_graph()
+        // });
+}
+
+
+function update_colors(){
+    update_graph_draw_colors(graphDraw,
+                             document.getElementById('color_by_group').checked,
+                             false, //document.getElementById('color_by_degree').checked,
+                             document.getElementById('color_by_degree_ranked').checked )
+}
+
+function reset_graph( layout_method="random"){
+    d3.select("#graph").selectAll("*").remove();
+    d3.select("#convergence").selectAll("*").remove();
+    d3.select("#dist_pres").selectAll("*").remove();
+    layouts.forEach( l => {
+        document.getElementById("btn-"+l).setAttribute("class", "btn " + ( l === layout_method ? "btn-primary": "btn-outline-primary" ) )
+    })
+
+    // Clear any existing node positions
+    graph.nodes.forEach(n=>{
+      delete n.x
+      delete n.y
+    })
+
+    // Initialize Layout
+    let start_time = performance.now()
+    if( layout_method !== 'random'){
+        if( layout_method === 'radial_layout') stlayout.radial_layout([5,795],[5,595])
+        if( layout_method === 'layered_layout') stlayout.layered_layout([5,795],[5,595])
+    }
+    let end_time = performance.now()
+    console.log( "Layout Time ("+layout_method+"): " + (end_time - start_time) + " ms")
+
+    // Draw Graph
+    start_time = performance.now()
+    graphDraw = GraphDraw(graph).set_tick_callback( ()=>{ } )
+                                 .set_click_callback( (d)=>console.log(d) )
+
+    update_colors()
+    end_time = performance.now()
+    console.log( "Initialize FDL Time: " + (end_time - start_time) + " ms")
+
+    if( ph0d ) ph0d.set_graph_draw(graphDraw)
+    if( ph1d ) ph1d.set_graph_draw(graphDraw)
+
+}
+
+function update_ph(slider){
+    ph0d.update_threshold(slider.value)
+}
+
+
+
+
+document.getElementById('import').onclick = function() {
+        var files = document.getElementById('selectFiles').files;
+        // console.log(files);
+        if (files.length <= 0) {
+            return false;
+        }
+
+        var fr = new FileReader();
+
+        fr.onload = function(e) { 
+            document.getElementById('show_results').style.display = 'block';
+            change_dataset( JSON.parse(e.target.result ) )
+        }
+
+        fr.readAsText(files.item(0));
+        // document.getElementById('load_files').style.display = 'none';
+        
+    };
+
+
+</script>
+</html>
